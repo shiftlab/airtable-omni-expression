@@ -1,0 +1,12 @@
+src/
+node_modules/
+*.log
+.DS_Store
+.env
+.env.*
+coverage/
+.nyc_output/
+.git/
+*.tgz
+rollup.config.js
+.cursor/
