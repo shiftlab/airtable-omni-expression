@@ -5,7 +5,10 @@ export default {
   input: "src/index.tsx",
   plugins: [
     svg({ stringify: true }),
-    typescript({ tsconfig: "tsconfig.app.json" }),
+    typescript({
+      tsconfig: "tsconfig.build.json",
+      useTsconfigDeclarationDir: true,
+    }),
   ],
   output: [
     {
