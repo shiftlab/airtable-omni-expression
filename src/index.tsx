@@ -4,7 +4,7 @@ import { OmniAnimationFileName, SVG_CONTENT_MAP } from "./animationAssets";
 
 export { OmniAnimationFileName };
 
-interface OmniExpressionProps {
+export interface OmniExpressionProps {
   fileName: OmniAnimationFileName;
   width?: number;
   height?: number;

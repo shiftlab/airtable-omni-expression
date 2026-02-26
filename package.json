@@ -2,7 +2,7 @@
   "name": "@shiftlab/airtable-omni-expression",
   "version": "1.0.0",
   "description": "React component to render Omni Expressions",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "files": [
