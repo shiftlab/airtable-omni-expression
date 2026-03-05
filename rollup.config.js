@@ -3,6 +3,7 @@ import svg from "rollup-plugin-svg-import";
 
 export default {
   input: "src/index.tsx",
+  external: ["react", "react/jsx-runtime", "react-dom"],
   plugins: [
     svg({ stringify: true }),
     typescript({
