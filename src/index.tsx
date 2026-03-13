@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { isNeutralHex, getColorBrightness, lightenHex } from "./colorUtils";
-import { OmniAnimationFileName, SVG_CONTENT_MAP } from "./animationAssets";
+import {
+  OmniAnimationFileName,
+  SVG_CONTENT_MAP,
+  STATIC_SVG_CONTENT_MAP,
+} from "./animationAssets";
 
 export { OmniAnimationFileName };
 
@@ -11,12 +15,26 @@ export interface OmniExpressionProps {
   primaryColor: string;
   secondaryColor?: string;
   tertiaryColor?: string;
+  /** When true, renders the static (non-animated) version of the asset. Use for prefers-reduced-motion. */
+  prefersReducedMotion?: boolean;
 }
 
 /**
  * Animated Omni expression component using data URL approach
  * This creates a data URL from the SVG and uses it in an iframe
  */
+/** Converts rgb(r,g,b) in SVG content to #rrggbb so the existing hex-based color replacement works. */
+function normalizeRgbToHex(svg: string): string {
+  return svg.replace(
+    /rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g,
+    (_match, r, g, b) => {
+      const toHex = (n: number) =>
+        Math.min(255, Math.max(0, n)).toString(16).padStart(2, "0");
+      return `#${toHex(Number(r))}${toHex(Number(g))}${toHex(Number(b))}`;
+    }
+  );
+}
+
 export function OmniExpression({
   fileName,
   width = 96,
@@ -24,10 +42,15 @@ export function OmniExpression({
   primaryColor,
   secondaryColor,
   tertiaryColor,
+  prefersReducedMotion = false,
 }: OmniExpressionProps) {
-  const svgContent = SVG_CONTENT_MAP[fileName];
-
   const { dataUrl } = useMemo(() => {
+    const rawContent =
+      prefersReducedMotion && STATIC_SVG_CONTENT_MAP[fileName]
+        ? STATIC_SVG_CONTENT_MAP[fileName]!
+        : SVG_CONTENT_MAP[fileName];
+    const svgContent = rawContent ? normalizeRgbToHex(rawContent) : "";
+
     if (!svgContent)
       return {
         dataUrl: "",
@@ -508,7 +531,7 @@ export function OmniExpression({
       effectiveSecondaryColor: calculatedSecondary,
       effectiveTertiaryColor: calculatedTertiary,
     };
-  }, [svgContent, primaryColor, secondaryColor, tertiaryColor]);
+  }, [fileName, prefersReducedMotion, primaryColor, secondaryColor, tertiaryColor]);
 
   if (!dataUrl) return null;
 
