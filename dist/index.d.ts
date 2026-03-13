@@ -7,9 +7,7 @@ export interface OmniExpressionProps {
     primaryColor: string;
     secondaryColor?: string;
     tertiaryColor?: string;
+    /** When true, renders the static (non-animated) version of the asset. Use for prefers-reduced-motion. */
+    prefersReducedMotion?: boolean;
 }
-/**
- * Animated Omni expression component using data URL approach
- * This creates a data URL from the SVG and uses it in an iframe
- */
-export declare function OmniExpression({ fileName, width, height, primaryColor, secondaryColor, tertiaryColor, }: OmniExpressionProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function OmniExpression({ fileName, width, height, primaryColor, secondaryColor, tertiaryColor, prefersReducedMotion, }: OmniExpressionProps): import("react/jsx-runtime").JSX.Element | null;
