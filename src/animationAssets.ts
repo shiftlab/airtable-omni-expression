@@ -58,11 +58,16 @@ export const SVG_CONTENT_MAP: Record<OmniAnimationFileName, string> = {
     OMNI_Loaders_004_WaitingForInput,
 };
 
-export const STATIC_SVG_CONTENT_MAP: Partial<
-  Record<OmniAnimationFileName, string>
-> = {
-  [OmniAnimationFileName.OMNI_Expression_001_Rest]:
-    OMNI_Expression_001_Rest_static,
-  [OmniAnimationFileName.OMNI_Loaders_002_Building]:
-    OMNI_Loaders_002_Building_static,
-};
+/** Static SVG used when `prefersReducedMotion` is true (all animations except Building loader). */
+export const REDUCED_MOTION_FALLBACK_SNAPSHOT = OMNI_Expression_001_Rest_static;
+
+/** Static SVG for Building loader when `prefersReducedMotion` is true. */
+export const REDUCED_MOTION_BUILDING_SNAPSHOT = OMNI_Loaders_002_Building_static;
+
+export function getReducedMotionSvgSource(
+  fileName: OmniAnimationFileName
+): string {
+  return fileName === OmniAnimationFileName.OMNI_Loaders_002_Building
+    ? REDUCED_MOTION_BUILDING_SNAPSHOT
+    : REDUCED_MOTION_FALLBACK_SNAPSHOT;
+}

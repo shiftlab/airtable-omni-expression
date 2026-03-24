@@ -3,7 +3,7 @@ import { isNeutralHex, getColorBrightness, lightenHex } from "./colorUtils";
 import {
   OmniAnimationFileName,
   SVG_CONTENT_MAP,
-  STATIC_SVG_CONTENT_MAP,
+  getReducedMotionSvgSource,
 } from "./animationAssets";
 
 export { OmniAnimationFileName };
@@ -60,10 +60,9 @@ export function OmniExpression({
   prefersReducedMotion = false,
 }: OmniExpressionProps) {
   const { dataUrl } = useMemo(() => {
-    const rawContent =
-      prefersReducedMotion && STATIC_SVG_CONTENT_MAP[fileName]
-        ? STATIC_SVG_CONTENT_MAP[fileName]!
-        : SVG_CONTENT_MAP[fileName];
+    const rawContent = prefersReducedMotion
+      ? getReducedMotionSvgSource(fileName)
+      : SVG_CONTENT_MAP[fileName];
     const svgContent = rawContent ? normalizeRgbToHex(rawContent) : "";
 
     if (!svgContent) return { dataUrl: "" };

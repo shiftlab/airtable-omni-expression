@@ -134,10 +134,15 @@ const SVG_CONTENT_MAP = {
     [OmniAnimationFileName.OMNI_Loaders_003_DeepAnalysis]: OMNI_Loaders_003_DeepAnalysis,
     [OmniAnimationFileName.OMNI_Loaders_004_WaitingForInput]: OMNI_Loaders_004_WaitingForInput,
 };
-const STATIC_SVG_CONTENT_MAP = {
-    [OmniAnimationFileName.OMNI_Expression_001_Rest]: OMNI_Expression_001_Rest_static,
-    [OmniAnimationFileName.OMNI_Loaders_002_Building]: OMNI_Loaders_002_Building_static,
-};
+/** Static SVG used when `prefersReducedMotion` is true (all animations except Building loader). */
+const REDUCED_MOTION_FALLBACK_SNAPSHOT = OMNI_Expression_001_Rest_static;
+/** Static SVG for Building loader when `prefersReducedMotion` is true. */
+const REDUCED_MOTION_BUILDING_SNAPSHOT = OMNI_Loaders_002_Building_static;
+function getReducedMotionSvgSource(fileName) {
+    return fileName === OmniAnimationFileName.OMNI_Loaders_002_Building
+        ? REDUCED_MOTION_BUILDING_SNAPSHOT
+        : REDUCED_MOTION_FALLBACK_SNAPSHOT;
+}
 
 /** Converts rgb(r,g,b) in SVG content to #rrggbb so hex-based color replacement works. */
 function normalizeRgbToHex(svg) {
@@ -167,8 +172,8 @@ function hexToReplacePattern(normalizedHex) {
 }
 function OmniExpression({ fileName, width = 96, height, primaryColor, secondaryColor, prefersReducedMotion = false, }) {
     const { dataUrl } = useMemo(() => {
-        const rawContent = prefersReducedMotion && STATIC_SVG_CONTENT_MAP[fileName]
-            ? STATIC_SVG_CONTENT_MAP[fileName]
+        const rawContent = prefersReducedMotion
+            ? getReducedMotionSvgSource(fileName)
             : SVG_CONTENT_MAP[fileName];
         const svgContent = rawContent ? normalizeRgbToHex(rawContent) : "";
         if (!svgContent)

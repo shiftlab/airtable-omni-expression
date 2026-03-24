@@ -15,4 +15,8 @@ export declare enum OmniAnimationFileName {
     OMNI_Loaders_004_WaitingForInput = "OMNI_Loaders_004_WaitingForInput.svg"
 }
 export declare const SVG_CONTENT_MAP: Record<OmniAnimationFileName, string>;
-export declare const STATIC_SVG_CONTENT_MAP: Partial<Record<OmniAnimationFileName, string>>;
+/** Static SVG used when `prefersReducedMotion` is true (all animations except Building loader). */
+export declare const REDUCED_MOTION_FALLBACK_SNAPSHOT: string;
+/** Static SVG for Building loader when `prefersReducedMotion` is true. */
+export declare const REDUCED_MOTION_BUILDING_SNAPSHOT: string;
+export declare function getReducedMotionSvgSource(fileName: OmniAnimationFileName): string;
