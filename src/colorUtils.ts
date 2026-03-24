@@ -37,15 +37,14 @@ export function lightenHex(hex: string, percent: number = 60): string {
 }
 
 /**
- * Generate two tints from a base color
+ * Generate a lighter tint from a base color
  * @param baseColor - The base hex color
  * @returns An object with base and light tint colors
  */
 export function generateTints(baseColor: string) {
   return {
     base: baseColor,
-    tint1: lightenHex(baseColor, 60), // Light tint (similar to #bfaefc from original)
-    tint2: lightenHex(baseColor, 80), // Even lighter tint
+    tint1: lightenHex(baseColor, 60),
   };
 }
 

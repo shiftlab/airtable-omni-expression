@@ -6,8 +6,7 @@ export interface OmniExpressionProps {
     height?: number;
     primaryColor: string;
     secondaryColor?: string;
-    tertiaryColor?: string;
     /** When true, renders the static (non-animated) version of the asset. Use for prefers-reduced-motion. */
     prefersReducedMotion?: boolean;
 }
-export declare function OmniExpression({ fileName, width, height, primaryColor, secondaryColor, tertiaryColor, prefersReducedMotion, }: OmniExpressionProps): import("react/jsx-runtime").JSX.Element | null;
+export declare function OmniExpression({ fileName, width, height, primaryColor, secondaryColor, prefersReducedMotion, }: OmniExpressionProps): import("react/jsx-runtime").JSX.Element | null;
