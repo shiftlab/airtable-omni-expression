@@ -13,19 +13,7 @@ import OMNI_Loaders_002_Building from "./animations/OMNI_Loaders_002_Building.sv
 import OMNI_Loaders_003_DeepAnalysis from "./animations/OMNI_Loaders_003_DeepAnalysis.svg";
 import OMNI_Loaders_004_WaitingForInput from "./animations/OMNI_Loaders_004_WaitingForInput.svg";
 import OMNI_Expression_001_Rest_static from "./animations/static/OMNI_Expression_001_Rest_snapshot.svg";
-import OMNI_Expression_002_HumanAssistance_static from "./animations/static/OMNI_Expression_002_HumanAssistance_snapshot.svg";
-import OMNI_Expression_003_Curiosity_static from "./animations/static/OMNI_Expression_003_Curiosity_snapshot.svg";
-import OMNI_Expression_004_Excited_static from "./animations/static/OMNI_Expression_004_Excited_snapshot.svg";
-import OMNI_Expression_005_HumanAssistance_static from "./animations/static/OMNI_Expression_005_HumanAssistance_snapshot.svg";
-import OMNI_Greeting_001_SunEnergy_static from "./animations/static/OMNI_Greeting_001_SunEnergy_snapshot.svg";
-import OMNI_Greeting_002_Bloom_static from "./animations/static/OMNI_Greeting_002_Bloom_snapshot.svg";
-import OMNI_Greeting_003_Bloom_static from "./animations/static/OMNI_Greeting_003_Bloom_snapshot.svg";
-import OMNI_Greeting_004_DeepResearch_static from "./animations/static/OMNI_Greeting_004_DeepResearch_snapshot.svg";
-import OMNI_Greeting_005_Updating_static from "./animations/static/OMNI_Greeting_005_Updating_snapshot.svg";
-import OMNI_Loaders_001_General_static from "./animations/static/OMNI_Loaders_001_General_snapshot.svg";
 import OMNI_Loaders_002_Building_static from "./animations/static/OMNI_Loaders_002_Building_snapshot.svg";
-import OMNI_Loaders_003_DeepAnalysis_static from "./animations/static/OMNI_Loaders_003_DeepAnalysis_snapshot.svg";
-import OMNI_Loaders_004_WaitingForInput_static from "./animations/static/OMNI_Loaders_004_WaitingForInput_snapshot.svg";
 
 export enum OmniAnimationFileName {
   OMNI_Expression_001_Rest = "OMNI_Expression_001_Rest.svg",
@@ -70,26 +58,16 @@ export const SVG_CONTENT_MAP: Record<OmniAnimationFileName, string> = {
     OMNI_Loaders_004_WaitingForInput,
 };
 
-export const STATIC_SVG_CONTENT_MAP: Partial<Record<OmniAnimationFileName, string>> = {
-  [OmniAnimationFileName.OMNI_Expression_001_Rest]: OMNI_Expression_001_Rest_static,
-  [OmniAnimationFileName.OMNI_Expression_002_HumanAssistance]:
-    OMNI_Expression_002_HumanAssistance_static,
-  [OmniAnimationFileName.OMNI_Expression_003_Curiosity]:
-    OMNI_Expression_003_Curiosity_static,
-  [OmniAnimationFileName.OMNI_Expression_004_Excited]: OMNI_Expression_004_Excited_static,
-  [OmniAnimationFileName.OMNI_Expression_005_HumanAssistance]:
-    OMNI_Expression_005_HumanAssistance_static,
-  [OmniAnimationFileName.OMNI_Greeting_001_SunEnergy]:
-    OMNI_Greeting_001_SunEnergy_static,
-  [OmniAnimationFileName.OMNI_Greeting_002_Bloom]: OMNI_Greeting_002_Bloom_static,
-  [OmniAnimationFileName.OMNI_Greeting_003_Bloom]: OMNI_Greeting_003_Bloom_static,
-  [OmniAnimationFileName.OMNI_Greeting_004_DeepResearch]:
-    OMNI_Greeting_004_DeepResearch_static,
-  [OmniAnimationFileName.OMNI_Greeting_005_Updating]: OMNI_Greeting_005_Updating_static,
-  [OmniAnimationFileName.OMNI_Loaders_001_General]: OMNI_Loaders_001_General_static,
-  [OmniAnimationFileName.OMNI_Loaders_002_Building]: OMNI_Loaders_002_Building_static,
-  [OmniAnimationFileName.OMNI_Loaders_003_DeepAnalysis]:
-    OMNI_Loaders_003_DeepAnalysis_static,
-  [OmniAnimationFileName.OMNI_Loaders_004_WaitingForInput]:
-    OMNI_Loaders_004_WaitingForInput_static,
-};
+/** Static SVG used when `prefersReducedMotion` is true (all animations except Building loader). */
+export const REDUCED_MOTION_FALLBACK_SNAPSHOT = OMNI_Expression_001_Rest_static;
+
+/** Static SVG for Building loader when `prefersReducedMotion` is true. */
+export const REDUCED_MOTION_BUILDING_SNAPSHOT = OMNI_Loaders_002_Building_static;
+
+export function getReducedMotionSvgSource(
+  fileName: OmniAnimationFileName
+): string {
+  return fileName === OmniAnimationFileName.OMNI_Loaders_002_Building
+    ? REDUCED_MOTION_BUILDING_SNAPSHOT
+    : REDUCED_MOTION_FALLBACK_SNAPSHOT;
+}

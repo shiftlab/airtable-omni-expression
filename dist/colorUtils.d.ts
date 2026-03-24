@@ -5,14 +5,13 @@
  */
 export declare function lightenHex(hex: string, percent?: number): string;
 /**
- * Generate two tints from a base color
+ * Generate a lighter tint from a base color
  * @param baseColor - The base hex color
  * @returns An object with base and light tint colors
  */
 export declare function generateTints(baseColor: string): {
     base: string;
     tint1: string;
-    tint2: string;
 };
 export declare function hexToHsl(hex: string): {
     h: number;
