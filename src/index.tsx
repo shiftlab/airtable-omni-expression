@@ -51,6 +51,29 @@ function hexToReplacePattern(normalizedHex: string): string {
     .join("");
 }
 
+/**
+ * Collect distinct non-neutral #hex colors anywhere in the SVG (fills, strokes,
+ * SMIL animate from/to/values, etc.). Some assets only encode palette colors in
+ * animation attributes, not on `fill="..."` — see OMNI_Loaders_001_General.svg.
+ */
+function collectHexColorsFromSvg(svgContent: string): string[] {
+  const hexInDocument =
+    /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})(?![0-9a-fA-F])/gi;
+  const seen = new Set<string>();
+  const result: string[] = [];
+  let match: RegExpExecArray | null;
+
+  hexInDocument.lastIndex = 0;
+  while ((match = hexInDocument.exec(svgContent)) !== null) {
+    const normalizedHex = normalizeHex(`#${match[1]}`);
+    if (!isNeutralHex(normalizedHex) && !seen.has(normalizedHex)) {
+      seen.add(normalizedHex);
+      result.push(normalizedHex);
+    }
+  }
+  return result;
+}
+
 export function OmniExpression({
   fileName,
   width = 96,
@@ -67,20 +90,7 @@ export function OmniExpression({
 
     if (!svgContent) return { dataUrl: "" };
 
-    const fillColorRegex =
-      /fill\s*=\s*(["'])#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\1/gi;
-    const seen = new Set<string>();
-    const normalizedFills: string[] = [];
-    let match: RegExpExecArray | null;
-
-    fillColorRegex.lastIndex = 0;
-    while ((match = fillColorRegex.exec(svgContent)) !== null) {
-      const normalizedHex = normalizeHex(`#${match[2]}`);
-      if (!isNeutralHex(normalizedHex) && !seen.has(normalizedHex)) {
-        seen.add(normalizedHex);
-        normalizedFills.push(normalizedHex);
-      }
-    }
+    const normalizedFills = collectHexColorsFromSvg(svgContent);
 
     const sortedColors = [...normalizedFills].sort(
       (a, b) => getColorBrightness(a) - getColorBrightness(b)
