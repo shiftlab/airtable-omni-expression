@@ -163,6 +163,7 @@ export function OmniExpression({
     <div>
       <iframe
         src={dataUrl}
+        tabIndex={-1}
         style={{
           width: width ? `${width}px` : "100%",
           height: height ? `${height}px` : "100%",
