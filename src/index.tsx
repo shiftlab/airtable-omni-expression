@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { isNeutralHex, getColorBrightness, lightenHex } from "./colorUtils";
 import {
   OmniAnimationFileName,
@@ -82,13 +82,13 @@ export function OmniExpression({
   secondaryColor,
   prefersReducedMotion = false,
 }: OmniExpressionProps) {
-  const { dataUrl } = useMemo(() => {
+  const svgMarkup = useMemo(() => {
     const rawContent = prefersReducedMotion
       ? getReducedMotionSvgSource(fileName)
       : SVG_CONTENT_MAP[fileName];
     const svgContent = rawContent ? normalizeRgbToHex(rawContent) : "";
 
-    if (!svgContent) return { dataUrl: "" };
+    if (!svgContent) return "";
 
     const normalizedFills = collectHexColorsFromSvg(svgContent);
 
@@ -148,29 +148,46 @@ export function OmniExpression({
       );
     }
 
-    const svgBlob = new Blob([modifiedSvg], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-
-    return {
-      dataUrl: URL.createObjectURL(svgBlob),
-    };
+    return modifiedSvg;
   }, [fileName, prefersReducedMotion, primaryColor, secondaryColor]);
 
-  if (!dataUrl) return null;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (!svgMarkup) {
+      container.replaceChildren();
+      return;
+    }
+
+    const doc = new DOMParser().parseFromString(svgMarkup, "image/svg+xml");
+    const svgElement = doc.documentElement;
+    if (!(svgElement instanceof SVGSVGElement)) {
+      container.replaceChildren();
+      return;
+    }
+
+    container.replaceChildren(document.importNode(svgElement, true));
+
+    return () => {
+      container.replaceChildren();
+    };
+  }, [svgMarkup]);
+
+  if (!svgMarkup) return null;
 
   return (
-    <div>
-      <iframe
-        src={dataUrl}
-        tabIndex={-1}
-        style={{
-          width: width ? `${width}px` : "100%",
-          height: height ? `${height}px` : "100%",
-          border: "none",
-        }}
-        title="Animated SVG"
-      />
-    </div>
+    <div
+      ref={containerRef}
+      role="img"
+      aria-label="Animated SVG"
+      tabIndex={-1}
+      style={{
+        width: width ? `${width}px` : "100%",
+        height: height ? `${height}px` : "100%",
+      }}
+    />
   );
 }

@@ -193,13 +193,13 @@ function collectHexColorsFromSvg(svgContent) {
     return result;
 }
 function OmniExpression({ fileName, width = 96, height, primaryColor, secondaryColor, prefersReducedMotion = false, }) {
-    const { dataUrl } = react.useMemo(() => {
+    const svgMarkup = react.useMemo(() => {
         const rawContent = prefersReducedMotion
             ? getReducedMotionSvgSource(fileName)
             : SVG_CONTENT_MAP[fileName];
         const svgContent = rawContent ? normalizeRgbToHex(rawContent) : "";
         if (!svgContent)
-            return { dataUrl: "" };
+            return "";
         const normalizedFills = collectHexColorsFromSvg(svgContent);
         const sortedColors = [...normalizedFills].sort((a, b) => getColorBrightness(a) - getColorBrightness(b));
         let calculatedSecondary;
@@ -238,20 +238,34 @@ function OmniExpression({ fileName, width = 96, height, primaryColor, secondaryC
             const pattern = hexToReplacePattern(oldNormalized);
             modifiedSvg = modifiedSvg.replace(new RegExp(`#${pattern}(?![0-9a-fA-F])`, "gi"), newColor);
         }
-        const svgBlob = new Blob([modifiedSvg], {
-            type: "image/svg+xml;charset=utf-8",
-        });
-        return {
-            dataUrl: URL.createObjectURL(svgBlob),
-        };
+        return modifiedSvg;
     }, [fileName, prefersReducedMotion, primaryColor, secondaryColor]);
-    if (!dataUrl)
+    const containerRef = react.useRef(null);
+    react.useEffect(() => {
+        const container = containerRef.current;
+        if (!container)
+            return;
+        if (!svgMarkup) {
+            container.replaceChildren();
+            return;
+        }
+        const doc = new DOMParser().parseFromString(svgMarkup, "image/svg+xml");
+        const svgElement = doc.documentElement;
+        if (!(svgElement instanceof SVGSVGElement)) {
+            container.replaceChildren();
+            return;
+        }
+        container.replaceChildren(document.importNode(svgElement, true));
+        return () => {
+            container.replaceChildren();
+        };
+    }, [svgMarkup]);
+    if (!svgMarkup)
         return null;
-    return (jsxRuntime.jsx("div", { children: jsxRuntime.jsx("iframe", { src: dataUrl, tabIndex: -1, style: {
-                width: width ? `${width}px` : "100%",
-                height: height ? `${height}px` : "100%",
-                border: "none",
-            }, title: "Animated SVG" }) }));
+    return (jsxRuntime.jsx("div", { ref: containerRef, role: "img", "aria-label": "Animated SVG", tabIndex: -1, style: {
+            width: width ? `${width}px` : "100%",
+            height: height ? `${height}px` : "100%",
+        } }));
 }
 
 exports.OmniExpression = OmniExpression;
