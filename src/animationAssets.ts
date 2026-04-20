@@ -71,3 +71,10 @@ export function getReducedMotionSvgSource(
     ? REDUCED_MOTION_BUILDING_SNAPSHOT
     : REDUCED_MOTION_FALLBACK_SNAPSHOT;
 }
+
+/** True for `OMNI_Greeting_*` assets — used to default one-shot playback in `OmniExpression`. */
+export function isGreetingAnimationFile(
+  fileName: OmniAnimationFileName
+): boolean {
+  return fileName.includes("Greeting");
+}

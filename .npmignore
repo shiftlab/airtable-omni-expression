@@ -10,3 +10,4 @@ coverage/
 *.tgz
 rollup.config.js
 .cursor/
+_dev/

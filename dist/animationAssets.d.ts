@@ -20,3 +20,5 @@ export declare const REDUCED_MOTION_FALLBACK_SNAPSHOT: string;
 /** Static SVG for Building loader when `prefersReducedMotion` is true. */
 export declare const REDUCED_MOTION_BUILDING_SNAPSHOT: string;
 export declare function getReducedMotionSvgSource(fileName: OmniAnimationFileName): string;
+/** True for `OMNI_Greeting_*` assets — used to default one-shot playback in `OmniExpression`. */
+export declare function isGreetingAnimationFile(fileName: OmniAnimationFileName): boolean;

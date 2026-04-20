@@ -4,9 +4,11 @@ import {
   OmniAnimationFileName,
   SVG_CONTENT_MAP,
   getReducedMotionSvgSource,
+  isGreetingAnimationFile,
 } from "./animationAssets";
+import { stripIndefiniteSmilRepeat } from "./smilUtils";
 
-export { OmniAnimationFileName };
+export { OmniAnimationFileName, isGreetingAnimationFile };
 
 export interface OmniExpressionProps {
   fileName: OmniAnimationFileName;
@@ -16,6 +18,11 @@ export interface OmniExpressionProps {
   secondaryColor?: string;
   /** When true, renders the static (non-animated) version of the asset. Use for prefers-reduced-motion. */
   prefersReducedMotion?: boolean;
+  /**
+   * When false, SMIL animations use a single iteration (`repeatCount="1"`) and freeze on the last frame.
+   * When omitted, greetings (`OMNI_Greeting_*`) default to false; other assets default to true (loop).
+   */
+  shouldLoop?: boolean;
 }
 
 /** Converts rgb(r,g,b) in SVG content to #rrggbb so hex-based color replacement works. */
@@ -81,7 +88,10 @@ export function OmniExpression({
   primaryColor,
   secondaryColor,
   prefersReducedMotion = false,
+  shouldLoop,
 }: OmniExpressionProps) {
+  const effectiveShouldLoop =
+    shouldLoop ?? !isGreetingAnimationFile(fileName);
   const svgMarkup = useMemo(() => {
     const rawContent = prefersReducedMotion
       ? getReducedMotionSvgSource(fileName)
@@ -169,12 +179,16 @@ export function OmniExpression({
       return;
     }
 
-    container.replaceChildren(document.importNode(svgElement, true));
+    const imported = document.importNode(svgElement, true);
+    if (!effectiveShouldLoop && imported instanceof SVGSVGElement) {
+      stripIndefiniteSmilRepeat(imported);
+    }
+    container.replaceChildren(imported);
 
     return () => {
       container.replaceChildren();
     };
-  }, [svgMarkup]);
+  }, [svgMarkup, effectiveShouldLoop]);
 
   if (!svgMarkup) return null;
 

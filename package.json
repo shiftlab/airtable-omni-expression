@@ -10,7 +10,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "dev": "npm run build && npm --prefix _dev run dev"
   },
   "peerDependencies": {
     "react": "^18.3.1",

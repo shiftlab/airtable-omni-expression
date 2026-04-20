@@ -145,6 +145,30 @@ function getReducedMotionSvgSource(fileName) {
         ? REDUCED_MOTION_BUILDING_SNAPSHOT
         : REDUCED_MOTION_FALLBACK_SNAPSHOT;
 }
+/** True for `OMNI_Greeting_*` assets — used to default one-shot playback in `OmniExpression`. */
+function isGreetingAnimationFile(fileName) {
+    return fileName.includes("Greeting");
+}
+
+const SMIL_REPEAT_ELEMENTS = [
+    "animate",
+    "animateTransform",
+    "animateMotion",
+    "set",
+];
+/**
+ * Replaces SMIL `repeatCount="indefinite"` with `1` so the animation runs once
+ * and remains on the final frame (with `fill="freeze"` in the asset).
+ */
+function stripIndefiniteSmilRepeat(svgRoot) {
+    for (const tag of SMIL_REPEAT_ELEMENTS) {
+        svgRoot.querySelectorAll(tag).forEach((el) => {
+            if (el.getAttribute("repeatCount") === "indefinite") {
+                el.setAttribute("repeatCount", "1");
+            }
+        });
+    }
+}
 
 /** Converts rgb(r,g,b) in SVG content to #rrggbb so hex-based color replacement works. */
 function normalizeRgbToHex(svg) {
@@ -192,7 +216,8 @@ function collectHexColorsFromSvg(svgContent) {
     }
     return result;
 }
-function OmniExpression({ fileName, width = 96, height, primaryColor, secondaryColor, prefersReducedMotion = false, }) {
+function OmniExpression({ fileName, width = 96, height, primaryColor, secondaryColor, prefersReducedMotion = false, shouldLoop, }) {
+    const effectiveShouldLoop = shouldLoop ?? !isGreetingAnimationFile(fileName);
     const svgMarkup = react.useMemo(() => {
         const rawContent = prefersReducedMotion
             ? getReducedMotionSvgSource(fileName)
@@ -255,11 +280,15 @@ function OmniExpression({ fileName, width = 96, height, primaryColor, secondaryC
             container.replaceChildren();
             return;
         }
-        container.replaceChildren(document.importNode(svgElement, true));
+        const imported = document.importNode(svgElement, true);
+        if (!effectiveShouldLoop && imported instanceof SVGSVGElement) {
+            stripIndefiniteSmilRepeat(imported);
+        }
+        container.replaceChildren(imported);
         return () => {
             container.replaceChildren();
         };
-    }, [svgMarkup]);
+    }, [svgMarkup, effectiveShouldLoop]);
     if (!svgMarkup)
         return null;
     return (jsxRuntime.jsx("div", { ref: containerRef, role: "img", "aria-label": "Animated SVG", tabIndex: -1, style: {
@@ -269,3 +298,4 @@ function OmniExpression({ fileName, width = 96, height, primaryColor, secondaryC
 }
 
 exports.OmniExpression = OmniExpression;
+exports.isGreetingAnimationFile = isGreetingAnimationFile;
