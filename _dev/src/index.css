@@ -1,0 +1,93 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+  background: #121218;
+  color: #e8e8ef;
+  min-height: 100vh;
+}
+
+#root {
+  padding: 1.25rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #1c1c26;
+  border-radius: 8px;
+  border: 1px solid #2a2a36;
+}
+
+.panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9898a8;
+}
+
+.panel select,
+.panel input[type="color"] {
+  font: inherit;
+  color: inherit;
+  background: #121218;
+  border: 1px solid #3a3a48;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  min-height: 2rem;
+}
+
+.panel input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  background: linear-gradient(160deg, #1e1e2a, #14141c);
+  border-radius: 12px;
+  border: 1px solid #2a2a36;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: #888898;
+  max-width: 42rem;
+  line-height: 1.45;
+}
+
+code {
+  font-size: 0.85em;
+  background: #2a2a36;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
