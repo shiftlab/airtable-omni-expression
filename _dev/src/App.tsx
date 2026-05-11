@@ -15,6 +15,7 @@ export default function App() {
   const [loopMode, setLoopMode] = useState<LoopMode>("default");
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [primaryColor, setPrimaryColor] = useState("#7c37ef");
+  const [secondaryColor, setSecondaryColor] = useState("#2dd4bf");
 
   const shouldLoop = useMemo(() => {
     if (loopMode === "default") return undefined;
@@ -76,6 +77,15 @@ export default function App() {
             onChange={(e) => setPrimaryColor(e.target.value)}
           />
         </label>
+
+        <label>
+          secondaryColor
+          <input
+            type="color"
+            value={secondaryColor}
+            onChange={(e) => setSecondaryColor(e.target.value)}
+          />
+        </label>
       </div>
 
       <div className="preview">
@@ -83,6 +93,7 @@ export default function App() {
           fileName={fileName}
           width={200}
           primaryColor={primaryColor}
+          secondaryColor={secondaryColor}
           prefersReducedMotion={prefersReducedMotion}
           shouldLoop={shouldLoop}
         />
