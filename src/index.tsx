@@ -81,6 +81,60 @@ function collectHexColorsFromSvg(svgContent: string): string[] {
   return result;
 }
 
+/** Pulls #hex tokens from SMIL / presentation paint strings (semicolon lists, etc.). */
+function addHexTokensFromPaintValue(
+  value: string | null | undefined,
+  into: Set<string>
+): void {
+  if (!value) return;
+  for (const token of value.split(/[;\s,]+/)) {
+    const t = token.trim();
+    if (t.length < 4 || !t.startsWith("#")) continue;
+    const n = normalizeHex(t);
+    if (!isNeutralHex(n)) into.add(n);
+  }
+}
+
+/**
+ * Hex colors that actually contribute to visible (or animated) paint.
+ * Excludes e.g. `stroke="#…"` with `stroke-width="0"` (layout/export artifacts) so they
+ * do not become `primaryColor` and starve visible fills when `secondaryColor` is set.
+ */
+function collectThemableHexColorsFromSvg(svgContent: string): string[] {
+  const allInDocument = collectHexColorsFromSvg(svgContent);
+  try {
+    const doc = new DOMParser().parseFromString(svgContent, "image/svg+xml");
+    const root = doc.documentElement;
+    if (!(root instanceof SVGSVGElement)) {
+      return allInDocument;
+    }
+
+    const themable = new Set<string>();
+    for (const el of root.querySelectorAll("*")) {
+      addHexTokensFromPaintValue(el.getAttribute("fill"), themable);
+      addHexTokensFromPaintValue(el.getAttribute("stop-color"), themable);
+      const stroke = el.getAttribute("stroke");
+      const strokeWidth = el.getAttribute("stroke-width")?.trim();
+      if (stroke && strokeWidth !== "0") {
+        addHexTokensFromPaintValue(stroke, themable);
+      }
+    }
+
+    for (const el of root.querySelectorAll("animate, set, animateColor")) {
+      const attrName = (el.getAttribute("attributeName") || "").toLowerCase();
+      if (attrName !== "fill") continue;
+      addHexTokensFromPaintValue(el.getAttribute("from"), themable);
+      addHexTokensFromPaintValue(el.getAttribute("to"), themable);
+      addHexTokensFromPaintValue(el.getAttribute("values"), themable);
+    }
+
+    const filtered = allInDocument.filter((c) => themable.has(c));
+    return filtered.length > 0 ? filtered : allInDocument;
+  } catch {
+    return allInDocument;
+  }
+}
+
 export function OmniExpression({
   fileName,
   width = 96,
@@ -100,7 +154,7 @@ export function OmniExpression({
 
     if (!svgContent) return "";
 
-    const normalizedFills = collectHexColorsFromSvg(svgContent);
+    const normalizedFills = collectThemableHexColorsFromSvg(svgContent);
 
     const sortedColors = [...normalizedFills].sort(
       (a, b) => getColorBrightness(a) - getColorBrightness(b)
